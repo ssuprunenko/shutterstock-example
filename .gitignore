@@ -25,5 +25,4 @@ capybara-*.html
 .Spotlight-V100
 .Trashes
 
-Gemfile.lock
 .env
