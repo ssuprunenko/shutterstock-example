@@ -28,12 +28,40 @@ end
 get '/profile' do
   client = Shutterstock.new(session[:access_token], session[:contributor_id])
   user = client.user
+
   html =
   """
-    <h1>Shutterstock Contributor Profile</h1>
     <h2>#{user['full_name']}</h2>
     <a href='mailto:#{user['email']}'>#{user['email']}</a>
   """
+
+  html << "<h2>User info:</h2>"
+  user.each do |k, v|
+    html << "<p><b>#{k}:</b> <span>#{v}</span></p>"
+  end
+
+  # /contributors/:id
+  html << "<h2>Public profile:</h2>"
+  client.profile.each do |k, v|
+    html << "<p><b>#{k}:</b> <span>#{v}</span></p>"
+  end
+
+  # Collections (List Sets)
+  html << "<h2>Collections:</h2>"
+  client.collections.each do |set|
+    html << "<li>#{set['name']}"
+
+    set.each do |k, v|
+      html << "<p><b>#{k}:</b> <span>#{v}</span></p>"
+    end
+
+    html << "</li>"
+  end
+
+  # Earnings
+  html << "<h2>Earnings:</h2>"
+  html << "<p>#{client.earnings}</p>"
+
   html
 end
 
@@ -63,11 +91,15 @@ class Shutterstock
     self.class.get('/user', @options)
   end
 
-  def profile(id=@contributor_id)
-    self.class.get('/contributors/' + id.to_s, @options)
+  def profile(id=@contributor_id, opts=@options)
+    self.class.get("/contributors/#{id}", opts)
   end
 
-  def earnings
-    self.class.get('/contributor/earnings', @options)
+  def earnings(opts=@options)
+    self.class.get('/contributor/earnings', opts)
+  end
+
+  def collections(id=@contributor_id, opts=@options)
+    self.class.get("/contributors/#{id}/collections", opts)['data']
   end
 end
