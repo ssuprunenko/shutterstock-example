@@ -6,6 +6,4 @@ gem 'omniauth-shutterstock-contributor', '0.1.1'
 gem 'dotenv'
 gem 'httparty'
 
-group :development do
-  gem 'pry'
-end
+gem 'pry'
